@@ -11,6 +11,9 @@
 		B772EF8D2C10097900600E26 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B772EF8C2C10097900600E26 /* ContentView.swift */; };
 		B772EF8F2C10097D00600E26 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B772EF8E2C10097D00600E26 /* Assets.xcassets */; };
 		B772EF932C10097D00600E26 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B772EF922C10097D00600E26 /* Preview Assets.xcassets */; };
+		B772EF9A2C10182D00600E26 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = B772EF992C10182D00600E26 /* GameScene.swift */; };
+		B7DF9CC62C10237C003DC544 /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7DF9CC52C10237C003DC544 /* MainMenu.swift */; };
+		B7DF9CC82C102695003DC544 /* BrickExplosion.sks in Resources */ = {isa = PBXBuildFile; fileRef = B7DF9CC72C102695003DC544 /* BrickExplosion.sks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +23,9 @@
 		B772EF8E2C10097D00600E26 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B772EF902C10097D00600E26 /* Brickbreaker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Brickbreaker.entitlements; sourceTree = "<group>"; };
 		B772EF922C10097D00600E26 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B772EF992C10182D00600E26 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
+		B7DF9CC52C10237C003DC544 /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
+		B7DF9CC72C102695003DC544 /* BrickExplosion.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = BrickExplosion.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +60,9 @@
 			children = (
 				B772EF8A2C10097900600E26 /* BrickbreakerApp.swift */,
 				B772EF8C2C10097900600E26 /* ContentView.swift */,
+				B7DF9CC72C102695003DC544 /* BrickExplosion.sks */,
+				B7DF9CC52C10237C003DC544 /* MainMenu.swift */,
+				B772EF992C10182D00600E26 /* GameScene.swift */,
 				B772EF8E2C10097D00600E26 /* Assets.xcassets */,
 				B772EF902C10097D00600E26 /* Brickbreaker.entitlements */,
 				B772EF912C10097D00600E26 /* Preview Content */,
@@ -129,6 +138,7 @@
 			files = (
 				B772EF932C10097D00600E26 /* Preview Assets.xcassets in Resources */,
 				B772EF8F2C10097D00600E26 /* Assets.xcassets in Resources */,
+				B7DF9CC82C102695003DC544 /* BrickExplosion.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,8 +149,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B772EF9A2C10182D00600E26 /* GameScene.swift in Sources */,
 				B772EF8D2C10097900600E26 /* ContentView.swift in Sources */,
 				B772EF8B2C10097900600E26 /* BrickbreakerApp.swift in Sources */,
+				B7DF9CC62C10237C003DC544 /* MainMenu.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
