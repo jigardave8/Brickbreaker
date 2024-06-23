@@ -10,6 +10,7 @@
 import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    
     let paddleCategory: UInt32 = 0x1 << 0
     let ballCategory: UInt32 = 0x1 << 1
     let brickCategory: UInt32 = 0x1 << 2
@@ -26,7 +27,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var gameOverSound: SKAction!
     
     var powerUps = [SKSpriteNode]()
-    var restartButton: SKLabelNode!
     
     override func didMove(to view: SKView) {
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
@@ -114,36 +114,35 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         
         if contactMask == ballCategory | brickCategory {
-            if contact.bodyA.categoryBitMask == brickCategory {
-                contact.bodyA.node?.removeFromParent()
-            } else {
-                contact.bodyB.node?.removeFromParent()
-            }
-            score += 10
-            scoreLabel.text = "Score: \(score)"
-            run(brickBreakSound)
-            createBrickExplosion(at: contact.contactPoint)
-            
-            // Chance to spawn a power-up
-            if Int.random(in: 0..<5) == 0 {
-                spawnPowerUp(at: contact.contactPoint)
-            }
+            handleBrickCollision(contact)
         } else if contactMask == ballCategory | paddleCategory {
             run(paddleBounceSound)
         } else if contactMask == ballCategory | boundaryCategory {
-            if contact.contactPoint.y < 50 {
-                // Ball hit the bottom of the screen
-                ball.removeFromParent()
-                run(gameOverSound)
-                showGameOver()
-            }
-        } else if contactMask == paddleCategory | brickCategory {
-            // Handle power-up collected
-            if contact.bodyA.categoryBitMask == brickCategory {
-                handlePowerUp(contact.bodyA.node as! SKSpriteNode)
-            } else {
-                handlePowerUp(contact.bodyB.node as! SKSpriteNode)
-            }
+            handleBoundaryCollision(contact)
+        }
+    }
+    
+    func handleBrickCollision(_ contact: SKPhysicsContact) {
+        if contact.bodyA.categoryBitMask == brickCategory {
+            contact.bodyA.node?.removeFromParent()
+        } else {
+            contact.bodyB.node?.removeFromParent()
+        }
+        score += 10
+        scoreLabel.text = "Score: \(score)"
+        run(brickBreakSound)
+        
+        // Chance to spawn a power-up
+        if Int.random(in: 0..<5) == 0 {
+            spawnPowerUp(at: contact.contactPoint)
+        }
+    }
+    
+    func handleBoundaryCollision(_ contact: SKPhysicsContact) {
+        if contact.contactPoint.y < 50 {
+            ball.removeFromParent()
+            run(gameOverSound)
+            showGameOver()
         }
     }
     
@@ -151,19 +150,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         brickBreakSound = SKAction.playSoundFileNamed("brick_break.mp3", waitForCompletion: false)
         paddleBounceSound = SKAction.playSoundFileNamed("paddle_bounce.mp3", waitForCompletion: false)
         gameOverSound = SKAction.playSoundFileNamed("game_over.mp3", waitForCompletion: false)
-    }
-    
-    func createBrickExplosion(at position: CGPoint) {
-        if let explosion = SKEmitterNode(fileNamed: "BrickExplosion") {
-            explosion.position = position
-            addChild(explosion)
-
-            let wait = SKAction.wait(forDuration: 1.0)
-            let remove = SKAction.removeFromParent()
-            explosion.run(SKAction.sequence([wait, remove]))
-        } else {
-            print("Error: Could not load BrickExplosion.sks")
-        }
     }
     
     func spawnPowerUp(at position: CGPoint) {
@@ -179,30 +165,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         powerUps.append(powerUp)
     }
     
-    func handlePowerUp(_ powerUp: SKSpriteNode) {
-        // Implement power-up effect
-        powerUp.removeFromParent()
-    }
-    
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let touchLocation = touch.location(in: self)
         paddle.position.x = touchLocation.x
-    }
-    
-    override func update(_ currentTime: TimeInterval) {
-        if ball.position.y < 0 {
-            ball.removeFromParent()
-            run(gameOverSound)
-            showGameOver()
-        }
-        
-        // Remove off-screen power-ups
-        for powerUp in powerUps {
-            if powerUp.position.y < 0 {
-                powerUp.removeFromParent()
-            }
-        }
     }
     
     func showGameOver() {
@@ -213,7 +179,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         gameOverLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 + 20)
         addChild(gameOverLabel)
         
-        restartButton = SKLabelNode(text: "Restart")
+        let restartButton = SKLabelNode(text: "Restart")
         restartButton.fontName = "Arial"
         restartButton.fontSize = 30
         restartButton.fontColor = .white
@@ -235,31 +201,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func restartGame() {
-        // Reset score
-        score = 0
-        scoreLabel.text = "Score: \(score)"
-        
-        // Remove all bricks
-        for row in bricks {
-            for brick in row {
-                brick.removeFromParent()
-            }
-        }
+        // Remove all nodes except boundaries
+        removeAllChildren()
         bricks.removeAll()
-        
-        // Remove all power-ups
-        for powerUp in powerUps {
-            powerUp.removeFromParent()
-        }
         powerUps.removeAll()
         
-        // Remove game over and restart button
-        childNode(withName: "restart")?.removeFromParent()
-        childNode(withName: "Game Over")?.removeFromParent()
-        
-        // Recreate bricks and ball
-        createBricks()
+        // Reset score
+        score = 0
+        createPaddle()
         createBall()
+        createBricks()
+        createScoreLabel()
         
         isPaused = false
     }
