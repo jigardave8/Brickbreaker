@@ -5,6 +5,8 @@
 //  Created by Jigar on 05/06/24.
 //
 
+// MainMenu.swift
+
 import SpriteKit
 
 class MainMenuScene: SKScene {
@@ -29,11 +31,38 @@ class MainMenuScene: SKScene {
         let fadeOut = SKAction.fadeOut(withDuration: 0.75)
         let sequence = SKAction.sequence([fadeIn, fadeOut])
         startLabel.run(SKAction.repeatForever(sequence))
+        
+        // Additional Menu Options
+        let optionsLabel = SKLabelNode(text: "Options")
+        optionsLabel.fontName = "PressStart2P"
+        optionsLabel.fontSize = 20
+        optionsLabel.fontColor = .white
+        optionsLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 - 100)
+        optionsLabel.name = "options"
+        addChild(optionsLabel)
+        
+        let highScoresLabel = SKLabelNode(text: "High Scores")
+        highScoresLabel.fontName = "PressStart2P"
+        highScoresLabel.fontSize = 20
+        highScoresLabel.fontColor = .white
+        highScoresLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 - 150)
+        highScoresLabel.name = "highScores"
+        addChild(highScoresLabel)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let transition = SKTransition.flipHorizontal(withDuration: 1.0)
-        let gameScene = GameScene(size: size)
-        view?.presentScene(gameScene, transition: transition)
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+        let nodesArray = nodes(at: location)
+        
+        if nodesArray.first?.name == "options" {
+            // Handle Options
+        } else if nodesArray.first?.name == "highScores" {
+            // Handle High Scores
+        } else {
+            let transition = SKTransition.flipHorizontal(withDuration: 1.0)
+            let gameScene = GameScene(size: size)
+            view?.presentScene(gameScene, transition: transition)
+        }
     }
 }

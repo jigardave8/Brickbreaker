@@ -25,6 +25,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var paddleBounceSound: SKAction!
     var gameOverSound: SKAction!
     
+    var powerUps = [SKSpriteNode]()
+    var restartButton: SKLabelNode!
+    
     override func didMove(to view: SKView) {
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
@@ -120,8 +123,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             scoreLabel.text = "Score: \(score)"
             run(brickBreakSound)
             createBrickExplosion(at: contact.contactPoint)
+            
+            // Chance to spawn a power-up
+            if Int.random(in: 0..<5) == 0 {
+                spawnPowerUp(at: contact.contactPoint)
+            }
         } else if contactMask == ballCategory | paddleCategory {
             run(paddleBounceSound)
+        } else if contactMask == ballCategory | boundaryCategory {
+            if contact.contactPoint.y < 50 {
+                // Ball hit the bottom of the screen
+                ball.removeFromParent()
+                run(gameOverSound)
+                showGameOver()
+            }
+        } else if contactMask == paddleCategory | brickCategory {
+            // Handle power-up collected
+            if contact.bodyA.categoryBitMask == brickCategory {
+                handlePowerUp(contact.bodyA.node as! SKSpriteNode)
+            } else {
+                handlePowerUp(contact.bodyB.node as! SKSpriteNode)
+            }
         }
     }
     
@@ -143,7 +165,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             print("Error: Could not load BrickExplosion.sks")
         }
     }
-
+    
+    func spawnPowerUp(at position: CGPoint) {
+        let powerUp = SKSpriteNode(color: .random(), size: CGSize(width: 30, height: 30))
+        powerUp.position = position
+        powerUp.physicsBody = SKPhysicsBody(rectangleOf: powerUp.size)
+        powerUp.physicsBody?.isDynamic = true
+        powerUp.physicsBody?.categoryBitMask = brickCategory
+        powerUp.physicsBody?.contactTestBitMask = paddleCategory
+        powerUp.physicsBody?.collisionBitMask = paddleCategory
+        powerUp.physicsBody?.velocity = CGVector(dx: 0, dy: -200)
+        addChild(powerUp)
+        powerUps.append(powerUp)
+    }
+    
+    func handlePowerUp(_ powerUp: SKSpriteNode) {
+        // Implement power-up effect
+        powerUp.removeFromParent()
+    }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
@@ -155,14 +194,74 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if ball.position.y < 0 {
             ball.removeFromParent()
             run(gameOverSound)
-            let gameOverLabel = SKLabelNode(text: "Game Over")
-            gameOverLabel.fontName = "Arial"
-            gameOverLabel.fontSize = 40
-            gameOverLabel.fontColor = .white
-            gameOverLabel.position = CGPoint(x: size.width / 2, y: size.height / 2)
-            addChild(gameOverLabel)
-            isPaused = true
+            showGameOver()
         }
+        
+        // Remove off-screen power-ups
+        for powerUp in powerUps {
+            if powerUp.position.y < 0 {
+                powerUp.removeFromParent()
+            }
+        }
+    }
+    
+    func showGameOver() {
+        let gameOverLabel = SKLabelNode(text: "Game Over")
+        gameOverLabel.fontName = "Arial"
+        gameOverLabel.fontSize = 40
+        gameOverLabel.fontColor = .white
+        gameOverLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 + 20)
+        addChild(gameOverLabel)
+        
+        restartButton = SKLabelNode(text: "Restart")
+        restartButton.fontName = "Arial"
+        restartButton.fontSize = 30
+        restartButton.fontColor = .white
+        restartButton.position = CGPoint(x: size.width / 2, y: size.height / 2 - 40)
+        restartButton.name = "restart"
+        addChild(restartButton)
+        
+        isPaused = true
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+        let nodesArray = nodes(at: location)
+        
+        if nodesArray.first?.name == "restart" {
+            restartGame()
+        }
+    }
+    
+    func restartGame() {
+        // Reset score
+        score = 0
+        scoreLabel.text = "Score: \(score)"
+        
+        // Remove all bricks
+        for row in bricks {
+            for brick in row {
+                brick.removeFromParent()
+            }
+        }
+        bricks.removeAll()
+        
+        // Remove all power-ups
+        for powerUp in powerUps {
+            powerUp.removeFromParent()
+        }
+        powerUps.removeAll()
+        
+        // Remove game over and restart button
+        childNode(withName: "restart")?.removeFromParent()
+        childNode(withName: "Game Over")?.removeFromParent()
+        
+        // Recreate bricks and ball
+        createBricks()
+        createBall()
+        
+        isPaused = false
     }
 }
 
