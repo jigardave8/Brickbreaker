@@ -50,6 +50,8 @@ class MainMenuScene: SKScene {
         addChild(highScoresLabel)
     }
     
+    
+    
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
