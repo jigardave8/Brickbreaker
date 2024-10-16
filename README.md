@@ -1,7 +1,10 @@
 
 # Brickbreaker
+<img src="https://github.com/user-attachments/assets/f8b8fd7b-1e68-474c-ae7a-b0d1948ea328" width="250" />
+<img src="https://github.com/user-attachments/assets/b06e4900-20a2-4458-9e2a-a3009fe02f41" width="250" />
+<img src="https://github.com/user-attachments/assets/7ea7984c-930e-4a9a-b397-325dff3bb50b" width="250" />
 
-![Brick Breaker Game Screenshot](screenshot.png) 
+
 
 ## Overview
 
@@ -24,7 +27,7 @@ This project is a Brick Breaker game developed for iOS using SwiftUI. It feature
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/brick-breaker-game.git
+   git clone https://github.com/jigardave8/Brickbreaker.git
    ```
 2. Open the project in Xcode:
    ```bash
@@ -60,7 +63,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any inquiries or feedback, please reach out to [your-email@example.com](mailto:your-email@example.com).
+For any inquiries or feedback, please reach out to jdavenz8@gmail.com
 ```
 
-Feel free to customize the content, especially the features and contact information, to better reflect your game!
